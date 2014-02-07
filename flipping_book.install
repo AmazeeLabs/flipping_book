@@ -9,43 +9,43 @@
  * Implements hook_schema().
  */
 function flipping_book_schema() {
-	$schema['flipping_book'] = array(
-		'description' => 'Flipping Book files.',
-		'fields' => array(
-			'fbid' => array(
-				'description' => 'The primary identifier for a flipping_book row.',
-				'type' => 'serial',
-				'unsigned' => TRUE,
-				'not null' => TRUE,
-			),
-			'title' => array(
-				'type' => 'varchar',
-				'length' => 255,
-				'not null' => TRUE,
-				'default' => '',
-				'description' => 'The title of the flipping_book.',
-			),
-			'dir' => array(
-				'type' => 'varchar',
-				'length' => 255,
-				'not null' => TRUE,
-				'description' => 'The directory of the flipping_book',
-			),
-			'created' => array(
-				'description' => 'The Unix timestamp when the flipping_book was created.',
+  $schema['flipping_book'] = array(
+    'description' => 'Flipping Book files.',
+    'fields' => array(
+      'fbid' => array(
+        'description' => 'The primary identifier for a flipping_book row.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'title' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The title of the flipping_book.',
+      ),
+      'dir' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'The directory of the flipping_book',
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp when the flipping_book was created.',
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-			)
-		),
+      )
+    ),
     'unique keys' => array(
       'fbid_dir' => array('fbid', 'dir'),
       'dir' => array('dir'),
     ),
     'primary key' => array('fbid', 'dir'),
-	);
-	
-	return $schema;
+  );
+
+  return $schema;
 }
 
 /**

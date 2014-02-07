@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * @file
+ */
+
+/**
  * Form constructor for the flipping_book deletion confirmation form.
  *
  * @see flipping_book_delete_confirm_submit()

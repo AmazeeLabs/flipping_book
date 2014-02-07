@@ -1,35 +1,39 @@
 <?php
 
 /**
+ * @file
+ */
+
+/**
  * Flipping Book Management form.
  */
 function flipping_book_management_form($form, &$form_state) {
-  drupal_add_css(drupal_get_path('module', 'flipping_book').'/css/flipping_book.css');
-  
+  drupal_add_css(drupal_get_path('module', 'flipping_book') . '/css/flipping_book.css');
+
   $form['filters']['fb'] = array(
-      '#tree' => TRUE,
-      '#theme' => 'table',
-      '#header' => array(t('Title'), t('File'), t('Import')),
-      '#rows' => array(),
+    '#tree' => TRUE,
+    '#theme' => 'table',
+    '#header' => array(t('Title'), t('File'), t('Import')),
+    '#rows' => array(),
   );
-  
+
   $title = array(
-		'#type' => 'textfield',
-		'#title' => t('Title'),
-		'#required' => TRUE,
-	);
-  
+    '#type' => 'textfield',
+    '#title' => t('Title'),
+    '#required' => TRUE,
+  );
+
   $file = array(
-		'#type' => 'file',
-		'#title' => t('Flipping Book'),
-		'#description' => t('Allowed extension: zip'),
-	);
-	
-	$submit = array(
-		'#type' => 'submit',
-		'#value' => t('Import')
-	);
-  
+    '#type' => 'file',
+    '#title' => t('Flipping Book'),
+    '#description' => t('Allowed extension: zip'),
+  );
+
+  $submit = array(
+    '#type' => 'submit',
+    '#value' => t('Import')
+  );
+
   $form['filters']['fb'][] = array(
     'title' => &$title,
     'file' => &$file,
@@ -45,9 +49,9 @@ function flipping_book_management_form($form, &$form_state) {
   unset($title);
   unset($file);
   unset($submit);
-  
+
   $form['#suffix'] = views_embed_view('flipping_books', 'block_1');
-  
+
   return $form;
 }
 
@@ -56,52 +60,54 @@ function flipping_book_management_form($form, &$form_state) {
  * @see flipping_book_management_form().
  */
 function flipping_book_management_form_validate($form, &$form_state) {
-	$file = file_save_upload('fb', array('file_validate_extensions' => array('zip')));
-  
-	if ($file)
-		$form_state['values']['fb'][0]['file'] = $file;
-	else 
-		form_set_error('file', t('No file was uploaded.'));
+  $file = file_save_upload('fb', array('file_validate_extensions' => array('zip')));
+
+  if ($file)
+    $form_state['values']['fb'][0]['file'] = $file;
+  else
+    form_set_error('file', t('No file was uploaded.'));
 }
 
 /**
  * Submit callback
  * @see flipping_book_management_form().
  */
-function flipping_book_management_form_submit($form, &$form_state){
+function flipping_book_management_form_submit($form, &$form_state) {
   $title = $form_state['values']['fb'][0]['title'];
-  
+
   $file = $form_state['values']['fb'][0]['file'];
-	$filepath = drupal_realpath($file->uri);
-  
+  $filepath = drupal_realpath($file->uri);
+
   $dir = pathinfo(transliteration_clean_filename($file->filename), PATHINFO_FILENAME);
   $fdir = FLIPPINGBOOK_DIR;
   file_prepare_directory($fdir, FILE_CREATE_DIRECTORY);
-  $destination = file_destination($fdir.'/'.$dir, FILE_EXISTS_RENAME);
-  
+  $destination = file_destination($fdir . '/' . $dir, FILE_EXISTS_RENAME);
+
   $zip = new ZipArchive();
   $res = $zip->open($filepath);
-  
+
   if ($res) {
     try {
       $zip->extractTo(drupal_realpath($destination) . '/');
-      
+
       $record = array(
         'title' => $title,
-        'dir' => str_replace(FLIPPINGBOOK_DIR.'/', '', $destination),
+        'dir' => str_replace(FLIPPINGBOOK_DIR . '/', '', $destination),
         'created' => time()
       );
 
-      if(drupal_write_record('flipping_book', $record)) {
+      if (drupal_write_record('flipping_book', $record)) {
         drupal_set_message(t('Your Flipping Book has been imported.'));
       }
-      else{
+      else {
         drupal_set_message(t('There was an error saving your Flipping Book.'), 'error');
       }
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       drupal_set_message(t('Cannot extract Flipping Book file: @message', array('@message', $e->getMessage())), 'error');
     }
-  } else {
+  }
+  else {
     drupal_set_message(t('Cannot save Flipping Book informations'), 'error');
   }
 }

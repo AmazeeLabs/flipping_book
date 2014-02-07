@@ -1,4 +1,7 @@
 <?php
+/**
+ * @file
+ */
 
 /**
  * Defining constants.
@@ -34,7 +37,7 @@ function flipping_book_menu() {
     'page arguments' => array('flipping_book_management_form'),
     'access arguments' => array('manage flipping_book'),
     'file' => 'flipping_book.pages.inc',
-    'file path' => $module_path.'/includes'
+    'file path' => $module_path . '/includes'
   );
   
   $items[FLIPPINGBOOK_MANAGEMENT_PATH . '/%flipping_book/delete'] = array(
@@ -45,7 +48,7 @@ function flipping_book_menu() {
     'type' => MENU_CALLBACK,
     'context' => MENU_CONTEXT_INLINE,
     'file' => 'flipping_book.admin.inc',
-    'file path' => $module_path.'/includes'
+    'file path' => $module_path . '/includes'
   );
     
   return $items;
@@ -61,10 +64,10 @@ function flipping_book_load($fbid) {
       ->execute()
       ->fetchObject();
   
-  if(empty($flipping_book))
+  if (empty($flipping_book))
     return FALSE;
   
-  $flipping_book->uri = FLIPPINGBOOK_DIR.'/'.$flipping_book->dir.'/index.html';
+  $flipping_book->uri = FLIPPINGBOOK_DIR . '/' . $flipping_book->dir . '/index.html';
   $flipping_book->url = file_create_url($flipping_book->uri);
   $flipping_book->path = preg_replace("/^\/?/", "", parse_url($flipping_book->url, PHP_URL_PATH));
  
