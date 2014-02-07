@@ -1,0 +1,8 @@
+name = Flipping Book Reference
+description = Defines a field type for referencing one flipping_book from a node.
+package = Bmeme
+core = 7.x
+
+dependencies[] = field
+dependencies[] = options
+dependencies[] = flipping_book
