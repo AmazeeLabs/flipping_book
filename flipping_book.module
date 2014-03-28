@@ -230,7 +230,6 @@ function flipping_book_views_data() {
   // Define some fields based upon views_handler_field_entity in the entity
   // table so they can be re-used with other query backends.
   // @see views_handler_field_entity
-
   $data['flipping_book']['view_flipping_book'] = array(
     'field' => array(
       'title' => t('Link'),

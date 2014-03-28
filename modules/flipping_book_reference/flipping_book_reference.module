@@ -617,7 +617,7 @@ function flipping_book_reference_potential_references($field, $options = array()
 function _flipping_book_reference_potential_references_standard($field, $options) {
 
   $query = db_select('flipping_book', 'f');
-  $flipping_book_fbid_alias = $query->addField('f', 'fbid');
+  $query->addField('f', 'fbid');
   $flipping_book_title_alias = $query->addField('f', 'title', 'flipping_book_title');
   $flipping_book_dir_alias = $query->addField('f', 'dir', 'flipping_book_dir');
 
@@ -708,7 +708,7 @@ function flipping_book_reference_field_views_data($field) {
 
   $storage = $field['storage']['details']['sql'];
 
-  foreach ($storage as $age => $table_data) {
+  foreach ($storage as $table_data) {
     $table = key($table_data);
     $columns = current($table_data);
     $id_column = $columns['fbid'];
