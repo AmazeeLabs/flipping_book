@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Provide node nid argument handler.
+ * Provide flipping book fbid argument handler.
  */
 
 /**

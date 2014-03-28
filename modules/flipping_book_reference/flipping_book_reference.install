@@ -2,7 +2,8 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the flipping_book_reference module.
+ * Install, update and uninstall functions for the flipping_book_reference
+ * module.
  */
 
 /**
@@ -11,7 +12,7 @@
 function flipping_book_reference_field_schema($field) {
   $columns = array(
     'fbid' => array(
-      'type'     => 'int',
+      'type' => 'int',
       'unsigned' => TRUE,
       'not null' => FALSE,
     ),

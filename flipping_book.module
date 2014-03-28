@@ -1,13 +1,14 @@
 <?php
 /**
  * @file
+ * Manage FlippingBook packages into Drupal
  */
 
 /**
  * Defining constants.
  */
-define('FLIPPINGBOOK_DIR', 'public://flipping_book');
-define('FLIPPINGBOOK_MANAGEMENT_PATH', 'admin/config/media/flipping_book');
+define('FLIPPING_BOOK_DIR', 'public://flipping_book');
+define('FLIPPING_BOOK_MANAGEMENT_PATH', 'admin/config/media/flipping_book');
 
 /**
  * Implments hook_permission().
@@ -15,11 +16,11 @@ define('FLIPPINGBOOK_MANAGEMENT_PATH', 'admin/config/media/flipping_book');
 function flipping_book_permission() {
   return array(
     'administer flipping_book' => array(
-      'title' => t('Administer Flipping Book')
+      'title' => t('Administer Flipping Book'),
     ),
     'manage flipping_book' => array(
-      'title' => t('Manage Flipping Book')
-    )
+      'title' => t('Manage Flipping Book'),
+    ),
   );
 }
 
@@ -29,18 +30,18 @@ function flipping_book_permission() {
 function flipping_book_menu() {
   $module_path = drupal_get_path('module', 'flipping_book');
   $items = array();
-  
-  $items[FLIPPINGBOOK_MANAGEMENT_PATH] = array(
+
+  $items[FLIPPING_BOOK_MANAGEMENT_PATH] = array(
     'title' => 'Flipping Book',
     'description' => 'Import, delete your Flipping Books',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('flipping_book_management_form'),
     'access arguments' => array('manage flipping_book'),
     'file' => 'flipping_book.pages.inc',
-    'file path' => $module_path . '/includes'
+    'file path' => $module_path . '/includes',
   );
-  
-  $items[FLIPPINGBOOK_MANAGEMENT_PATH . '/%flipping_book/delete'] = array(
+
+  $items[FLIPPING_BOOK_MANAGEMENT_PATH . '/%flipping_book/delete'] = array(
     'title' => 'Delete',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('flipping_book_delete_confirm', 4),
@@ -48,39 +49,50 @@ function flipping_book_menu() {
     'type' => MENU_CALLBACK,
     'context' => MENU_CONTEXT_INLINE,
     'file' => 'flipping_book.admin.inc',
-    'file path' => $module_path . '/includes'
+    'file path' => $module_path . '/includes',
   );
-    
+
   return $items;
 }
 
 /**
- * Helper function: load a flipping_book by an id
+ * Load a flipping_book from the database.
+ *
+ * @param int $fbid
+ *   The Flipping Book ID.
+ *
+ * @return object
+ *   A fully-populated flipping_book object, or FALSE if the flipping_book
+ *   is not found.
  */
 function flipping_book_load($fbid) {
   $flipping_book = db_select('flipping_book', 'f')
-      ->fields('f')
-      ->condition('f.fbid', $fbid, '=')
-      ->execute()
-      ->fetchObject();
-  
-  if (empty($flipping_book))
+    ->fields('f')
+    ->condition('f.fbid', $fbid, '=')
+    ->execute()
+    ->fetchObject();
+
+  if (empty($flipping_book)) {
     return FALSE;
-  
-  $flipping_book->uri = FLIPPINGBOOK_DIR . '/' . $flipping_book->dir . '/index.html';
+  }
+
+  $flipping_book->uri = FLIPPING_BOOK_DIR . '/' . $flipping_book->dir . '/index.html';
   $flipping_book->url = file_create_url($flipping_book->uri);
   $flipping_book->path = preg_replace("/^\/?/", "", parse_url($flipping_book->url, PHP_URL_PATH));
- 
+
   return $flipping_book;
 }
 
 /**
- * Helper function: delete a flipping_book by an id
+ * Delete a flipping_book.
+ *
+ * @param int $fbid
+ *   The Flipping Book ID.
  */
 function flipping_book_delete($fbid) {
   $flipping_book = flipping_book_load($fbid);
   $path = pathinfo(drupal_realpath($flipping_book->uri), PATHINFO_DIRNAME);
-  
+
   if (file_unmanaged_delete_recursive($path)) {
     $result = db_delete('flipping_book')
       ->condition('fbid', $fbid, '=')
@@ -89,7 +101,7 @@ function flipping_book_delete($fbid) {
   else {
     $result = FALSE;
   }
-  
+
   return $result;
 }
 
@@ -103,38 +115,40 @@ function flipping_book_views_api() {
 }
 
 /**
- * Implements hook_views_data
+ * Implements hook_views_data().
  */
 function flipping_book_views_data() {
-  
+
   $data = array();
-  
+
   $data['flipping_book']['table']['group'] = t('Flipping Book');
   $data['flipping_book']['table']['base'] = array(
-    'field' => 'fbid', // This is the identifier field for the view.
+    // This is the identifier field for the view.
+    'field' => 'fbid',
     'title' => t('Flipping Book'),
     'help' => t('Flipping Book table contains data regarding Flipping Books imported into the site.'),
     'weight' => -10,
   );
-  
-  
-  // fbid
+
+  // Fbid.
   $data['flipping_book']['fbid'] = array(
     'title' => t('Fbid'),
-    'help' => t('The flipping_book ID.'), // The help that appears on the UI,
-    // Information for displaying the nid
+    // The help that appears on the UI.
+    'help' => t('The flipping_book ID.'),
+    // Information for displaying the nid.
     'field' => array(
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
     ),
-    // Information for accepting a fbid as an argument
+    // Information for accepting a fbid as an argument.
     'argument' => array(
       'handler' => 'views_handler_argument_flipping_book_fbid',
-      'name field' => 'title', // the field to display in the summary.
+      // The field to display in the summary.
+      'name field' => 'title',
       'numeric' => TRUE,
       'validate type' => 'fbid',
     ),
-    // Information for accepting a nid as a filter
+    // Information for accepting a nid as a filter.
     'filter' => array(
       'handler' => 'views_handler_filter_numeric',
     ),
@@ -143,23 +157,27 @@ function flipping_book_views_data() {
       'handler' => 'views_handler_sort',
     ),
   );
-  
-  // title
+
+  // Title.
   $data['flipping_book']['title'] = array(
-    'title' => t('Title'), // The item it appears as on the UI,
-    'help' => t('The flipping_book title.'), // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // The item it appears as on the UI.
+    'title' => t('Title'),
+    // The help that appears on the UI.
+    'help' => t('The flipping_book title.'),
+    // Information for displaying a title as a field.
     'field' => array(
-      'field' => 'title', // the real field. This could be left out since it is the same.
-      'group' => t('Flipping Book'), // The group it appears in on the UI. Could be left out.
+      'field' => 'title',
+      // The real field. This could be left out since it is the same.
+      'group' => t('Flipping Book'),
+      // The group it appears in on the UI. Could be left out.
       'handler' => 'views_handler_field_flipping_book',
       'click sortable' => TRUE,
       'link_to_node default' => TRUE,
-     ),
+    ),
     'sort' => array(
       'handler' => 'views_handler_sort',
     ),
-    // Information for accepting a title as a filter
+    // Information for accepting a title as a filter.
     'filter' => array(
       'handler' => 'views_handler_filter_string',
     ),
@@ -167,20 +185,22 @@ function flipping_book_views_data() {
       'handler' => 'views_handler_argument_string',
     ),
   );
-  
-  // dir
+
+  // Directory.
   $data['flipping_book']['dir'] = array(
-    'title' => t('Directory'), // The item it appears as on the UI,
-    'help' => t('The flipping_book directory.'), // The help that appears on the UI,
-     // Information for displaying a title as a field
+    'title' => t('Directory'),
+    // The item it appears as on the UI.
+    'help' => t('The flipping_book directory.'),
+    // The help that appears on the UI.
+    // Information for displaying a title as a field.
     'field' => array(
       'handler' => 'views_handler_field',
       'click sortable' => TRUE,
-     ),
+    ),
     'sort' => array(
       'handler' => 'views_handler_sort',
     ),
-    // Information for accepting a title as a filter
+    // Information for accepting a title as a filter.
     'filter' => array(
       'handler' => 'views_handler_filter_string',
     ),
@@ -188,11 +208,13 @@ function flipping_book_views_data() {
       'handler' => 'views_handler_argument_string',
     ),
   );
-  
-  // created field
+
+  // Created field.
   $data['flipping_book']['created'] = array(
-    'title' => t('Post date'), // The item it appears as on the UI,
-    'help' => t('The date the flipping_book was posted.'), // The help that appears on the UI,
+    'title' => t('Post date'),
+    // The item it appears as on the UI.
+    'help' => t('The date the flipping_book was posted.'),
+    // The help that appears on the UI.
     'field' => array(
       'handler' => 'views_handler_field_date',
       'click sortable' => TRUE,
@@ -204,11 +226,10 @@ function flipping_book_views_data() {
       'handler' => 'views_handler_filter_date',
     ),
   );
-  
+
   // Define some fields based upon views_handler_field_entity in the entity
   // table so they can be re-used with other query backends.
   // @see views_handler_field_entity
-
 
   $data['flipping_book']['view_flipping_book'] = array(
     'field' => array(
@@ -225,9 +246,9 @@ function flipping_book_views_data() {
       'handler' => 'views_handler_field_flipping_book_link_delete',
     ),
   );
-  
-  //and last but not least...a little lie ^^" forgive me
+
+  // And last but not least...a little lie ^^" forgive me.
   $data['flipping_book']['table']['entity type'] = 'node';
-  
+
   return $data;
 }

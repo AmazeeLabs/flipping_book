@@ -7,6 +7,7 @@ versione = 7.x-1.0-dev
 configure = admin/config/media/flippingbook
 
 dependencies[] = views
+dependencies[] = transliteration
 
 files[] = views/views_handler_field_flipping_book.inc
 files[] = views/views_handler_argument_flipping_book_fbid.inc

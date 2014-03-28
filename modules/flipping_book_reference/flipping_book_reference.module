@@ -4,8 +4,9 @@
  * @file
  * Defines a field type for referencing one flipping_book from a node.
  */
-define('FBR_COLORBOX', module_exists('colorbox') && variable_get('colorbox_load', FALSE));
-define('FBR_LINK_TARGET_DEFAULT', '_self');
+
+define('FLIPPING_BOOK_REFERENCE_COLORBOX', module_exists('colorbox') && variable_get('colorbox_load', FALSE));
+define('FLIPPING_BOOK_REFERENCE_LINK_TARGET_DEFAULT', '_self');
 
 /**
  * Implements hook_menu().
@@ -36,9 +37,11 @@ function flipping_book_reference_field_info() {
           'args' => array(),
         ),
       ),
-      // It probably make more sense to have the referenceable types be per-field than per-instance
+      // It probably make more sense to have the referenceable types be
+      // per-field than per-instance
       // 'instance settings' => array('referenceable_types' => array()),
-      'default_widget' => 'options_select', //  flipping_book_reference_autocomplete',
+      'default_widget' => 'options_select',
+      // flipping_book_reference_autocomplete',
       'default_formatter' => 'flipping_book_reference_default',
       // Support hook_entity_property_info() from contrib "Entity API".
       'property_type' => 'node',
@@ -63,7 +66,8 @@ function flipping_book_reference_field_settings_form($field, $instance, $has_dat
  * Implements hook_field_validate().
  *
  * Possible error codes:
- * - 'invalid_fbid': fbid is not valid for the field (not a valid flipping_book id, or the flipping_book is not referenceable).
+ * - 'invalid_fbid': fbid is not valid for the field
+ * (not a valid flipping_book id, or the flipping_book is not referenceable).
  */
 function flipping_book_reference_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
   // Extract fbids to check.
@@ -106,7 +110,7 @@ function flipping_book_reference_field_validate($entity_type, $entity, $field, $
  * Implements hook_field_is_empty().
  */
 function flipping_book_reference_field_is_empty($item, $field) {
-  // fbid = 0 is empty too, which is exactly what we want.
+  // Fbid = 0 is empty too, which is exactly what we want.
   return empty($item['fbid']);
 }
 
@@ -119,7 +123,7 @@ function flipping_book_reference_field_formatter_info() {
       'label' => t('Title (link)'),
       'description' => t('Display the title of the referenced flipping_book as a link to the flipping_book page.'),
       'field types' => array('flipping_book_reference'),
-      'settings' => array('target' => FBR_LINK_TARGET_DEFAULT)
+      'settings' => array('target' => FLIPPING_BOOK_REFERENCE_LINK_TARGET_DEFAULT),
     ),
     'flipping_book_reference_plain' => array(
       'label' => t('Title (no link)'),
@@ -139,12 +143,16 @@ function flipping_book_reference_field_formatter_info() {
     ),
   );
 
-  if (FBR_COLORBOX) {
+  if (FLIPPING_BOOK_REFERENCE_COLORBOX) {
     $info['flipping_book_reference_colorbox'] = array(
       'label' => t('Colorbox link'),
       'description' => t('Display the title of the referenced flipping_book as a colorbox link to the flipping_book page.'),
       'field types' => array('flipping_book_reference'),
-      'settings' => array('width' => '800', 'height' => '500', 'link_title' => '')
+      'settings' => array(
+        'width' => '800',
+        'height' => '500',
+        'link_title' => '',
+      ),
     );
   }
 
@@ -200,6 +208,9 @@ function flipping_book_reference_field_formatter_settings_form($field, $instance
   return $element;
 }
 
+/**
+ * Link Targets mapping.
+ */
 function flipping_book_reference_link_targets() {
   return array(
     '_self' => t('Same window'),
@@ -240,11 +251,12 @@ function flipping_book_reference_field_formatter_settings_summary($field, $insta
 /**
  * Implements hook_field_formatter_prepare_view().
  *
- * Preload all flipping_books referenced by items using 'full entity' formatters.
+ * Preload all flipping_books referenced by items using
+ * 'full entity' formatters.
  */
 function flipping_book_reference_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
-  // Load the referenced flipping_books, except for the 'flipping_book_reference_fbid' which does
-  // not need full objects.
+  // Load the referenced flipping_books, except for the
+  // 'flipping_book_reference_fbid' which does not need full objects.
   // Collect ids to load.
   $ids = array();
   foreach ($displays as $id => $display) {
@@ -284,9 +296,9 @@ function flipping_book_reference_field_formatter_view($entity_type, $entity, $fi
             '#href' => $flipping_book->url,
             '#options' => array(
               'attributes' => array(
-                'target' => $settings['target']
-              )
-            )
+                'target' => $settings['target'],
+              ),
+            ),
           );
         }
         else {
@@ -308,7 +320,7 @@ function flipping_book_reference_field_formatter_view($entity_type, $entity, $fi
     case 'flipping_book_reference_path':
       foreach ($items as $delta => $item) {
         $options = array(
-          'absolute' => $settings['absolute']
+          'absolute' => $settings['absolute'],
         );
 
         $result[$delta] = array(
@@ -326,9 +338,9 @@ function flipping_book_reference_field_formatter_view($entity_type, $entity, $fi
           '#href' => $flipping_book->url . '?width=' . $settings['width'] . '&height=' . $settings['height'] . '&iframe=true',
           '#options' => array(
             'attributes' => array(
-              'class' => array('colorbox-load')
-            )
-          )
+              'class' => array('colorbox-load'),
+            ),
+          ),
         );
       }
 
@@ -421,7 +433,7 @@ function flipping_book_reference_field_widget_form(&$form, &$form_state, $field,
  *
  * Replace the flipping_book fbid with a flipping_book title.
  */
-function flipping_book_reference_autocomplete_value($element, $input = FALSE, $form_state) {
+function flipping_book_reference_autocomplete_value($element, $form_state, $input = FALSE) {
   if ($input === FALSE) {
     // We're building the displayed 'default value': expand the raw fbid into
     // "flipping_book title [fbid:f]".
@@ -457,10 +469,10 @@ function flipping_book_reference_autocomplete_validate($element, &$form_state, $
       list(, $title, $fbid) = $matches;
       if (!empty($title)) {
         $real_title = db_select('flipping_book', 'f')
-            ->fields('f', array('title'))
-            ->condition('f.fbid', $fbid)
-            ->execute()
-            ->fetchField();
+          ->fields('f', array('title'))
+          ->condition('f.fbid', $fbid)
+          ->execute()
+          ->fetchField();
         if (trim($title) != trim($real_title)) {
           form_error($element, t('%name: title mismatch. Please check your selection.', array('%name' => $instance['label'])));
         }
@@ -468,7 +480,8 @@ function flipping_book_reference_autocomplete_validate($element, &$form_state, $
     }
     else {
       // No explicit fbid (the submitted value was not populated by autocomplete
-      // selection). Get the fbid of a referencable flipping_book from the entered title.
+      // selection). Get the fbid of a referencable flipping_book from
+      // the entered title.
       $options = array(
         'string' => $value,
         'match' => 'equals',
@@ -488,8 +501,8 @@ function flipping_book_reference_autocomplete_validate($element, &$form_state, $
     }
   }
 
-  // Set the element's value as the flipping_book id that was extracted from the entered
-  // input.
+  // Set the element's value as the flipping_book id that was extracted
+  // from the entered input.
   form_set_value($element, $fbid, $form_state);
 }
 
@@ -501,20 +514,20 @@ function flipping_book_reference_field_widget_error($element, $error, $form, &$f
 }
 
 /**
- * Builds a list of referenceable flipping_books suitable for the '#option' FAPI property.
+ * List referenceable flipping_books suitable for the '#option' FAPI prop.
  *
- * Warning: the function does NOT take care of encoding or escaping the flipping_book
- * titles. Proper massaging needs to be performed by the caller, according to
- * the destination FAPI '#type' (radios / checkboxes / select).
+ * Warning: the function does NOT take care of encoding or escaping the
+ * flipping_book titles. Proper massaging needs to be performed by the caller,
+ * according to the destination FAPI '#type' (radios / checkboxes / select).
  *
- * @param $field
+ * @param array $field
  *   The field definition.
- * @param $flat
+ * @param bool $flat
  *   Whether optgroups are allowed.
  *
- * @return
- *   An array of referenceable flipping_book titles, keyed by flipping_book id. If the $flat
- *   parameter is TRUE, the list might be nested by optgroup first.
+ * @return array
+ *   An array of referenceable flipping_book titles, keyed by flipping_book id.
+ *   If the $flat parameter is TRUE, the list might be nested by optgroup first.
  */
 function _flipping_book_reference_options($field, $flat = TRUE) {
   $references = flipping_book_reference_potential_references($field);
@@ -550,9 +563,9 @@ function _flipping_book_reference_options($field, $flat = TRUE) {
  * The array we return contains all the potentially needed information,
  * and lets consumers use the parts they actually need.
  *
- * @param $field
+ * @param array $field
  *   The field definition.
- * @param $options
+ * @param array $options
  *   An array of options to limit the scope of the returned list. The following
  *   key/value pairs are accepted:
  *   - string: string to filter titles on (used by autocomplete).
@@ -561,7 +574,7 @@ function _flipping_book_reference_options($field, $flat = TRUE) {
  *   - ids: array of specific flipping_book ids to lookup.
  *   - limit: maximum size of the the result set. Defaults to 0 (no limit).
  *
- * @return
+ * @return array
  *   An array of valid flipping_books in the form:
  *   array(
  *     fbid => array(
@@ -580,12 +593,12 @@ function flipping_book_reference_potential_references($field, $options = array()
     'limit' => 0,
   );
 
-  $results = &drupal_static(__FUNCTION__, array());
+  $results = & drupal_static(__FUNCTION__, array());
 
   // Create unique id for static cache.
   $cid = $field['field_name'] . ':' . $options['match'] . ':'
-      . ($options['string'] !== '' ? $options['string'] : implode('-', $options['ids']))
-      . ':' . $options['limit'];
+    . ($options['string'] !== '' ? $options['string'] : implode('-', $options['ids']))
+    . ':' . $options['limit'];
   if (!isset($results[$cid])) {
     $references = _flipping_book_reference_potential_references_standard($field, $options);
 
@@ -619,7 +632,8 @@ function _flipping_book_reference_potential_references_standard($field, $options
         break;
 
       case 'equals':
-      default: // no match type or incorrect match type: use "="
+        // No match type or incorrect match type: use "="
+      default:
         $query->condition('f.title', $options['string']);
         break;
     }
@@ -634,8 +648,8 @@ function _flipping_book_reference_potential_references_standard($field, $options
   }
 
   $query
-      ->orderBy($flipping_book_title_alias)
-      ->orderBy($flipping_book_dir_alias);
+    ->orderBy($flipping_book_title_alias)
+    ->orderBy($flipping_book_dir_alias);
 
   $result = $query->execute()->fetchAll();
   $references = array();
@@ -706,9 +720,9 @@ function flipping_book_reference_field_views_data($field) {
       $data[$table][$id_column]['filter']['options callback'] = 'flipping_book_reference_views_filter_options';
       $data[$table][$id_column]['filter']['options arguments'] = array($field['field_name']);
 
-      // Argument: display flipping_book.title in argument titles (handled in our custom
-      // handler) and summary lists (handled by the base views_handler_argument
-      // handler).
+      // Argument: display flipping_book.title in argument titles (handled in
+      // our custom handler) and summary lists (handled by the base
+      // views_handler_argument handler).
       // Both mechanisms rely on the 'name table' and 'name field' information
       // below, by joining to a separate copy of the base table from the field
       // data table.
@@ -737,9 +751,9 @@ function flipping_book_reference_field_views_data($field) {
 }
 
 /**
- * 'options callback' for the views_handler_filter_in_operator filter.
+ * Options callback for the views_handler_filter_in_operator filter.
  *
- * @param $field_name
+ * @param string $field_name
  *   The field name.
  */
 function flipping_book_reference_views_filter_options($field_name) {

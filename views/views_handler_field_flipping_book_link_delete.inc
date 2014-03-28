@@ -22,7 +22,7 @@ class views_handler_field_flipping_book_link_delete extends views_handler_field_
     }
 
     $this->options['alter']['make_link'] = TRUE;
-    $this->options['alter']['path'] = FLIPPINGBOOK_MANAGEMENT_PATH . "/$flipping_book->fbid/delete";
+    $this->options['alter']['path'] = FLIPPING_BOOK_MANAGEMENT_PATH . "/$flipping_book->fbid/delete";
     $this->options['alter']['query'] = drupal_get_destination();
 
     $text = !empty($this->options['text']) ? $this->options['text'] : t('delete');

@@ -36,7 +36,7 @@ function flipping_book_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
-      )
+      ),
     ),
     'unique keys' => array(
       'fbid_dir' => array('fbid', 'dir'),
@@ -52,6 +52,6 @@ function flipping_book_schema() {
  * Implements hook_install().
  */
 function flipping_book_install() {
-  $directory = FLIPPINGBOOK_DIR;
+  $directory = FLIPPING_BOOK_DIR;
   file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
 }

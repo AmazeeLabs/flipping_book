@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Flipping Book Pages.
  */
 
 /**
@@ -31,7 +32,7 @@ function flipping_book_management_form($form, &$form_state) {
 
   $submit = array(
     '#type' => 'submit',
-    '#value' => t('Import')
+    '#value' => t('Import'),
   );
 
   $form['filters']['fb'][] = array(
@@ -56,20 +57,23 @@ function flipping_book_management_form($form, &$form_state) {
 }
 
 /**
- * Validation callback
+ * Validation callback.
+ *
  * @see flipping_book_management_form().
  */
 function flipping_book_management_form_validate($form, &$form_state) {
   $file = file_save_upload('fb', array('file_validate_extensions' => array('zip')));
 
-  if ($file)
+  if ($file) {
     $form_state['values']['fb'][0]['file'] = $file;
-  else
+  }
+  else {
     form_set_error('file', t('No file was uploaded.'));
+  }
 }
 
 /**
- * Submit callback
+ * Submit callback.
  * @see flipping_book_management_form().
  */
 function flipping_book_management_form_submit($form, &$form_state) {
@@ -79,7 +83,7 @@ function flipping_book_management_form_submit($form, &$form_state) {
   $filepath = drupal_realpath($file->uri);
 
   $dir = pathinfo(transliteration_clean_filename($file->filename), PATHINFO_FILENAME);
-  $fdir = FLIPPINGBOOK_DIR;
+  $fdir = FLIPPING_BOOK_DIR;
   file_prepare_directory($fdir, FILE_CREATE_DIRECTORY);
   $destination = file_destination($fdir . '/' . $dir, FILE_EXISTS_RENAME);
 
@@ -92,8 +96,8 @@ function flipping_book_management_form_submit($form, &$form_state) {
 
       $record = array(
         'title' => $title,
-        'dir' => str_replace(FLIPPINGBOOK_DIR . '/', '', $destination),
-        'created' => time()
+        'dir' => str_replace(FLIPPING_BOOK_DIR . '/', '', $destination),
+        'created' => time(),
       );
 
       if (drupal_write_record('flipping_book', $record)) {
@@ -104,7 +108,10 @@ function flipping_book_management_form_submit($form, &$form_state) {
       }
     }
     catch (Exception $e) {
-      drupal_set_message(t('Cannot extract Flipping Book file: @message', array('@message', $e->getMessage())), 'error');
+      drupal_set_message(t('Cannot extract Flipping Book file: @message', array(
+        '@message',
+        $e->getMessage(),
+      )), 'error');
     }
   }
   else {
