@@ -56,6 +56,27 @@ function flipping_book_menu() {
 }
 
 /**
+ * Loads flipping books from the database.
+ *
+ * This function should be used whenever you need to load more than one
+ * flipping_book from the database. Flipping books are loaded into memory
+ * and will not require database access if loaded again during the same page request.
+ *
+ * @param array $fbids
+ * @return array
+ *   An array of flipping books objects indexed by fbid.
+ */
+function flipping_book_load_multiple(array $fbids) {
+  $flipping_books = array();
+
+  foreach ($fbids as $fbid) {
+    $flipping_books[$fbid] = flipping_book_load($fbid);
+  }
+
+  return $flipping_books;
+}
+
+/**
  * Load a flipping_book from the database.
  *
  * @param int $fbid
@@ -66,21 +87,27 @@ function flipping_book_menu() {
  *   is not found.
  */
 function flipping_book_load($fbid) {
-  $flipping_book = db_select('flipping_book', 'f')
-    ->fields('f')
-    ->condition('f.fbid', $fbid, '=')
-    ->execute()
-    ->fetchObject();
+  $flipping_books = &drupal_static(__FUNCTION__);
 
-  if (empty($flipping_book)) {
-    return FALSE;
+  if (!isset($flipping_books[$fbid])) {
+    $flipping_book = db_select('flipping_book', 'f')
+      ->fields('f')
+      ->condition('f.fbid', $fbid, '=')
+      ->execute()
+      ->fetchObject();
+
+    if (empty($flipping_book)) {
+      return FALSE;
+    }
+
+    $flipping_book->uri = FLIPPING_BOOK_DIR . '/' . $flipping_book->dir . '/index.html';
+    $flipping_book->url = file_create_url($flipping_book->uri);
+    $flipping_book->path = preg_replace("/^\/?/", "", parse_url($flipping_book->url, PHP_URL_PATH));
+
+    $flipping_books[$fbid] = $flipping_book;
   }
 
-  $flipping_book->uri = FLIPPING_BOOK_DIR . '/' . $flipping_book->dir . '/index.html';
-  $flipping_book->url = file_create_url($flipping_book->uri);
-  $flipping_book->path = preg_replace("/^\/?/", "", parse_url($flipping_book->url, PHP_URL_PATH));
-
-  return $flipping_book;
+  return $flipping_books[$fbid];
 }
 
 /**
