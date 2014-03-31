@@ -59,7 +59,7 @@ function flipping_book_management_form($form, &$form_state) {
 /**
  * Validation callback.
  *
- * @see flipping_book_management_form().
+ * @see flipping_book_management_form()
  */
 function flipping_book_management_form_validate($form, &$form_state) {
   $file = file_save_upload('fb', array('file_validate_extensions' => array('zip')));
@@ -74,7 +74,7 @@ function flipping_book_management_form_validate($form, &$form_state) {
 
 /**
  * Submit callback.
- * @see flipping_book_management_form().
+ * @see flipping_book_management_form()
  */
 function flipping_book_management_form_submit($form, &$form_state) {
   $title = $form_state['values']['fb'][0]['title'];

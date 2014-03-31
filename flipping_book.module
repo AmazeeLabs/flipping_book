@@ -60,9 +60,12 @@ function flipping_book_menu() {
  *
  * This function should be used whenever you need to load more than one
  * flipping_book from the database. Flipping books are loaded into memory
- * and will not require database access if loaded again during the same page request.
+ * and will not require database access if loaded again during the same page
+ * request.
  *
  * @param array $fbids
+ *   An array of flipping books id.
+ *
  * @return array
  *   An array of flipping books objects indexed by fbid.
  */

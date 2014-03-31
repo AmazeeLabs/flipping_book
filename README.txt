@@ -44,5 +44,3 @@ variable checked)
 Current maintainers:
 
 * bmeme.com - http://www.bmeme.com
-
-

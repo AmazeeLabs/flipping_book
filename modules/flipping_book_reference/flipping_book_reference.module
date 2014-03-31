@@ -254,7 +254,6 @@ function flipping_book_reference_field_formatter_settings_summary($field, $insta
 function flipping_book_reference_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
   // Load the referenced flipping books, except for the
   // 'flipping_book_reference_fbid' which does not need full objects.
-
   // Collect ids to load.
   $ids = array();
   foreach ($displays as $id => $display) {
@@ -432,8 +431,8 @@ function flipping_book_reference_field_widget_form(&$form, &$form_state, $field,
  *
  * Replace the flipping_book fbid with a flipping_book title.
  */
-function flipping_book_reference_autocomplete_value($element, $input = FALSE, $form_state) {
-  if ($input === FALSE) {
+function flipping_book_reference_autocomplete_value($element, $input, $form_state) {
+  if (empty($input)) {
     // We're building the displayed 'default value': expand the raw fbid into
     // "flipping_book title [fbid:f]".
     $fbid = $element['#default_value'];
