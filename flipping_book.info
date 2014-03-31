@@ -3,7 +3,7 @@ description = Flipping Book module integration with Drupal.
 package = Bmeme
 core = 7.x
 
-configure = admin/config/media/flippingbook
+configure = admin/config/media/flipping_book
 
 dependencies[] = views
 dependencies[] = transliteration
