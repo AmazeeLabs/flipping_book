@@ -10,6 +10,7 @@
  */
 function flipping_book_management_form($form, &$form_state) {
   drupal_add_css(drupal_get_path('module', 'flipping_book') . '/css/flipping_book.css');
+  $max_upload_size = ini_get('upload_max_filesize');
 
   $form['filters']['fb'] = array(
     '#tree' => TRUE,
@@ -27,7 +28,7 @@ function flipping_book_management_form($form, &$form_state) {
   $file = array(
     '#type' => 'file',
     '#title' => t('Flipping Book'),
-    '#description' => t('Allowed extension: zip'),
+    '#description' => t('Allowed extension: zip. Files must be less than @max_upload_size', array('@max_upload_size' => $max_upload_size)),
   );
 
   $submit = array(
