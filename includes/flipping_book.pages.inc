@@ -83,7 +83,13 @@ function flipping_book_management_form_submit($form, &$form_state) {
   $file = $form_state['values']['fb'][0]['file'];
   $filepath = drupal_realpath($file->uri);
 
-  $dir = pathinfo(transliteration_clean_filename($file->filename), PATHINFO_FILENAME);
+  if (module_exists('transliteration')) {
+    $dir = pathinfo(transliteration_clean_filename($file->filename), PATHINFO_FILENAME);
+  }
+  else {
+    $dir = pathinfo(_flipping_book_clean_filename($file->filename), PATHINFO_FILENAME);
+  }
+
   $fdir = FLIPPING_BOOK_DIR;
   file_prepare_directory($fdir, FILE_CREATE_DIRECTORY);
   $destination = file_destination($fdir . '/' . $dir, FILE_EXISTS_RENAME);
@@ -118,4 +124,20 @@ function flipping_book_management_form_submit($form, &$form_state) {
   else {
     drupal_set_message(t('Cannot save Flipping Book informations'), 'error');
   }
+}
+
+/**
+ * Helper function to sanitize flipping_book filename
+ */
+function _flipping_book_clean_filename($filename) {
+  // Replace whitespace.
+  $filename = str_replace(' ', '_', $filename);
+  // Remove remaining unsafe characters.
+  $filename = preg_replace('![^0-9A-Za-z_.-]!', '', $filename);
+  // Remove multiple consecutive non-alphabetical characters.
+  $filename = preg_replace('/(_)_+|(\.)\.+|(-)-+/', '\\1\\2\\3', $filename);
+  // Force lowercase to prevent issues on case-insensitive file systems.
+  $filename = strtolower($filename);
+
+  return $filename;
 }
