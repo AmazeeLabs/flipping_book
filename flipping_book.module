@@ -19,7 +19,7 @@ function flipping_book_permission() {
       'title' => t('Administer Flipping Book'),
     ),
     'upload flipping_book' => array(
-      'title' => t('Upload Flipping Book'),
+      'title' => t('Upload Flipping Books'),
     ),
   );
 }
