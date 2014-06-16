@@ -1,6 +1,5 @@
 name = Flipping Book
-description = Flipping Book module integration with Drupal. 
-package = Bmeme
+description = Provides integration with FlippingBook packages.
 core = 7.x
 
 configure = admin/config/media/flipping_book

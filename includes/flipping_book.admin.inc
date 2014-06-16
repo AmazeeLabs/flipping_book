@@ -25,9 +25,9 @@ function flipping_book_delete_confirm($form, &$form_state, $flipping_book) {
 }
 
 /**
- * Executes node deletion.
+ * Executes flipping book deletion.
  *
- * @see node_delete_confirm()
+ * @see flipping_book_delete_confirm()
  */
 function flipping_book_delete_confirm_submit($form, &$form_state) {
   if ($form_state['values']['confirm']) {

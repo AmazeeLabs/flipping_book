@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Contains the basic 'node' field handler.
+ * Contains the basic 'flipping_book' field handler.
  */
 
 /**
- * Field handler to provide simple renderer that allows linking to a node.
+ * Field handler to provide simple renderer that allows linking to a flipping_book.
  * Definition terms:
  * - link_to_flipping_book default: Should this field have the checkbox
- * "link to node" enabled by default.
+ * "link to flipping_book" enabled by default.
  *
  * @ingroup views_field_handlers
  */
@@ -42,7 +42,7 @@ class views_handler_field_flipping_book extends views_handler_field {
   }
 
   /**
-   * Provide link to node option.
+   * Provide link to flipping_book option.
    */
   function options_form(&$form, &$form_state) {
     $form['link_to_flipping_book'] = array(
