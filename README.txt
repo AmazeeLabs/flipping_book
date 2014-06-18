@@ -19,7 +19,7 @@ kind of display you want of this field. Colorbox is just supported.
 -- REQUIREMENTS --
 
 Views
-Transliteration
+Transliteration (optional)
 Colorbox (optional) 
 
 

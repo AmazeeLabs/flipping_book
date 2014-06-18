@@ -9,7 +9,13 @@
  * Flipping Book Management form.
  */
 function flipping_book_management_form($form, &$form_state) {
-  drupal_add_css(drupal_get_path('module', 'flipping_book') . '/css/flipping_book.css');
+
+  $form['#attached'] = array(
+    'css' => array(
+      drupal_get_path('module', 'flipping_book') . '/css/flipping_book.css',
+    )
+  );
+
   $max_upload_size = ini_get('upload_max_filesize');
 
   $form['filters']['fb'] = array(
@@ -104,7 +110,7 @@ function flipping_book_management_form_submit($form, &$form_state) {
       $record = array(
         'title' => $title,
         'dir' => str_replace(FLIPPING_BOOK_DIR . '/', '', $destination),
-        'created' => time(),
+        'created' => REQUEST_TIME,
       );
 
       if (drupal_write_record('flipping_book', $record)) {

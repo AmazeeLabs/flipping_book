@@ -33,10 +33,12 @@ function flipping_book_delete_confirm_submit($form, &$form_state) {
   if ($form_state['values']['confirm']) {
     $flipping_book = flipping_book_load($form_state['values']['fbid']);
     flipping_book_delete($form_state['values']['fbid']);
+
     watchdog('content', '@type: deleted %title.', array(
       '@type' => 'flipping_book',
       '%title' => $flipping_book->title,
-    ));
+    ), WATCHDOG_WARNING);
+
     drupal_set_message(t('@type %title has been deleted.', array(
       '@type' => 'Flipping Book',
       '%title' => $flipping_book->title,
