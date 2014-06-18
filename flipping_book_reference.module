@@ -5,7 +5,6 @@
  * Defines a field type for referencing one flipping_book from a node.
  */
 
-define('FLIPPING_BOOK_REFERENCE_COLORBOX', module_exists('colorbox') && variable_get('colorbox_load', FALSE));
 define('FLIPPING_BOOK_REFERENCE_LINK_TARGET_DEFAULT', '_self');
 
 /**
@@ -140,7 +139,7 @@ function flipping_book_reference_field_formatter_info() {
     ),
   );
 
-  if (FLIPPING_BOOK_REFERENCE_COLORBOX) {
+  if (module_exists('colorbox') && variable_get('colorbox_load', FALSE)) {
     $info['flipping_book_reference_colorbox'] = array(
       'label' => t('Colorbox link'),
       'description' => t('Display the title of the referenced flipping_book as a colorbox link to the flipping_book page.'),
@@ -330,10 +329,16 @@ function flipping_book_reference_field_formatter_view($entity_type, $entity, $fi
     case 'flipping_book_reference_colorbox':
       foreach ($items as $delta => $item) {
         $flipping_book = $item['flipping_book'];
+        $query = array(
+          'width' => $settings['width'],
+          'height' => $settings['height'],
+          'iframe' => 'true',
+        );
+
         $result[$delta] = array(
           '#type' => 'link',
           '#title' => !empty($settings['link_title']) ? $settings['link_title'] : $flipping_book->title,
-          '#href' => $flipping_book->url . '?width=' . $settings['width'] . '&height=' . $settings['height'] . '&iframe=true',
+          '#href' => url($flipping_book->url, array('query' => $query)),
           '#options' => array(
             'attributes' => array(
               'class' => array('colorbox-load'),
@@ -684,6 +689,7 @@ function flipping_book_reference_autocomplete($entity_type, $bundle, $field_name
   }
 
   drupal_json_output($matches);
+  drupal_exit();
 }
 
 /**

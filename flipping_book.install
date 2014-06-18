@@ -42,7 +42,7 @@ function flipping_book_schema() {
       'fbid_dir' => array('fbid', 'dir'),
       'dir' => array('dir'),
     ),
-    'primary key' => array('fbid', 'dir'),
+    'primary key' => array('fbid'),
   );
 
   return $schema;
