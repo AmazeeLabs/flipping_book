@@ -52,6 +52,15 @@ function flipping_book_schema() {
  * Implements hook_install().
  */
 function flipping_book_install() {
-  $directory = FLIPPING_BOOK_DIR;
-  file_prepare_directory($directory, FILE_CREATE_DIRECTORY);
+  flipping_book_prepare_directory();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function flipping_book_uninstall() {
+  $dir = variable_get('flipping_book_schema', 'public') . '://flipping_book';
+  file_unmanaged_delete_recursive($dir);
+
+  variable_del('flipping_book_schema');
 }

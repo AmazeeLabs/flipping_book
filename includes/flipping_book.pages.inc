@@ -96,7 +96,7 @@ function flipping_book_management_form_submit($form, &$form_state) {
     $dir = pathinfo(_flipping_book_clean_filename($file->filename), PATHINFO_FILENAME);
   }
 
-  $fdir = FLIPPING_BOOK_DIR;
+  $fdir = flipping_book_dir();
   file_prepare_directory($fdir, FILE_CREATE_DIRECTORY);
   $destination = file_destination($fdir . '/' . $dir, FILE_EXISTS_RENAME);
 
@@ -109,7 +109,7 @@ function flipping_book_management_form_submit($form, &$form_state) {
 
       $record = array(
         'title' => $title,
-        'dir' => str_replace(FLIPPING_BOOK_DIR . '/', '', $destination),
+        'dir' => str_replace(flipping_book_dir() . '/', '', $destination),
         'created' => REQUEST_TIME,
       );
 
