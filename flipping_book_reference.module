@@ -337,7 +337,7 @@ function flipping_book_reference_field_formatter_view($entity_type, $entity, $fi
 
         $result[$delta] = array(
           '#type' => 'link',
-          '#title' => !empty($settings['link_title']) ? $settings['link_title'] : $flipping_book->title,
+          '#title' => !empty($settings['link_title']) ? t($settings['link_title']) : $flipping_book->title,
           '#href' => url($flipping_book->url, array('query' => $query)),
           '#options' => array(
             'attributes' => array(
