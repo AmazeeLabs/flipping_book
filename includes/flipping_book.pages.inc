@@ -106,6 +106,18 @@ function flipping_book_management_form_submit($form, &$form_state) {
   if ($res) {
     try {
       $zip->extractTo(drupal_realpath($destination) . '/');
+      // It may be that the zip archive contains a folder and then inside the
+      // index.html file, so we also want to handle that case.
+      if (!is_file($destination . '/index.html')) {
+        $scandir_list = scandir($destination);
+        // $scandir_list[0] is '.' and $scandir_list[1] is '..'.
+        // Also, we should have only one folder, that would be in
+        // $scandir_list[2], so not need for other checks here. If this is not
+        // the case, the archive is probably not valid.
+        if (!empty($scandir_list[2]) && is_dir($destination . '/' . $scandir_list[2])) {
+          $destination .= '/' . $scandir_list[2];
+        }
+      }
 
       $record = array(
         'title' => $title,
