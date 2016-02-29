@@ -100,48 +100,46 @@ function flipping_book_management_form_submit($form, &$form_state) {
   file_prepare_directory($fdir, FILE_CREATE_DIRECTORY);
   $destination = file_destination($fdir . '/' . $dir, FILE_EXISTS_RENAME);
 
-  $zip = new ZipArchive();
-  $res = $zip->open($filepath);
+  //$zip = new ZipArchive();
+  //$res = $zip->open($filepath);
+  $old_locale = setlocale(LC_CTYPE, '0');
+  $new_locale = setlocale(LC_CTYPE, 'en_US.UTF-8');
+  $args = array(
+    escapeshellarg($filepath),
+    '-d ' . escapeshellarg(drupal_realpath($destination) . '/'),
+  );
+  setlocale(LC_CTYPE, $old_locale);
+  $output = NULL;
+  $return = NULL;
+  exec("unzip " . implode(' ', $args), $output, $return);
 
-  if ($res) {
-    try {
-      $zip->extractTo(drupal_realpath($destination) . '/');
-      // It may be that the zip archive contains a folder and then inside the
-      // index.html file, so we also want to handle that case.
-      if (!is_file($destination . '/index.html')) {
-        $scandir_list = scandir($destination);
-        // $scandir_list[0] is '.' and $scandir_list[1] is '..'.
-        // Also, we should have only one folder, that would be in
-        // $scandir_list[2], so not need for other checks here. If this is not
-        // the case, the archive is probably not valid.
-        if (!empty($scandir_list[2]) && is_dir($destination . '/' . $scandir_list[2])) {
-          $destination .= '/' . $scandir_list[2];
-        }
-      }
-
-      $record = array(
-        'title' => $title,
-        'dir' => str_replace(flipping_book_dir() . '/', '', $destination),
-        'created' => REQUEST_TIME,
-      );
-
-      if (drupal_write_record('flipping_book', $record)) {
-        drupal_set_message(t('Your Flipping Book has been imported.'));
-      }
-      else {
-        drupal_set_message(t('There was an error saving your Flipping Book.'), 'error');
-      }
+  //$zip->extractTo(drupal_realpath($destination) . '/');
+  // It may be that the zip archive contains a folder and then inside the
+  // index.html file, so we also want to handle that case.
+  if (!is_file($destination . '/index.html')) {
+    $scandir_list = scandir($destination);
+    // $scandir_list[0] is '.' and $scandir_list[1] is '..'.
+    // Also, we should have only one folder, that would be in
+    // $scandir_list[2], so not need for other checks here. If this is not
+    // the case, the archive is probably not valid.
+    if (!empty($scandir_list[2]) && is_dir($destination . '/' . $scandir_list[2])) {
+      $destination .= '/' . $scandir_list[2];
     }
-    catch (Exception $e) {
-      drupal_set_message(t('Cannot extract Flipping Book file: @message', array(
-        '@message',
-        $e->getMessage(),
-      )), 'error');
-    }
+  }
+
+  $record = array(
+    'title' => $title,
+    'dir' => str_replace(flipping_book_dir() . '/', '', $destination),
+    'created' => REQUEST_TIME,
+  );
+
+  if (drupal_write_record('flipping_book', $record)) {
+    drupal_set_message(t('Your Flipping Book has been imported.'));
   }
   else {
-    drupal_set_message(t('Cannot save Flipping Book informations'), 'error');
+    drupal_set_message(t('There was an error saving your Flipping Book.'), 'error');
   }
+
 }
 
 /**
