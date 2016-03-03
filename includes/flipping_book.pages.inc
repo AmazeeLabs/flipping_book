@@ -114,17 +114,41 @@ function flipping_book_management_form_submit($form, &$form_state) {
   exec("unzip " . implode(' ', $args), $output, $return);
 
   //$zip->extractTo(drupal_realpath($destination) . '/');
-  // It may be that the zip archive contains a folder and then inside the
-  // index.html file, so we also want to handle that case.
-  if (!is_file($destination . '/index.html')) {
-    $scandir_list = scandir($destination);
-    // $scandir_list[0] is '.' and $scandir_list[1] is '..'.
-    // Also, we should have only one folder, that would be in
-    // $scandir_list[2], so not need for other checks here. If this is not
-    // the case, the archive is probably not valid.
-    if (!empty($scandir_list[2]) && is_dir($destination . '/' . $scandir_list[2])) {
-      $destination .= '/' . $scandir_list[2];
+  // It may be that the index.html is located in some deeper folder in the
+  // archive, so search for it. For that we will use a queue with the FIFO
+  // principle: we always process elements at the begining of the queue, and
+  // we add new elements to process at the end of the queue. The elements to
+  // process represent the folders. We will start with the initial destination
+  // folder in the queue. As soon as we find an index.html file, we will just
+  // break.
+  $folders_to_check = array($destination);
+  $index_html_found = FALSE;
+  while (!empty($folders_to_check)) {
+    $current_folder = reset($folders_to_check);
+    // If we found the index.html, we stop here.
+    if (is_file($current_folder . '/index.html')) {
+      $destination = $current_folder;
+      $index_html_found = TRUE;
+      break;
     }
+    // Add all the folders from the current folder to the queue.
+    $scandir_list = scandir($current_folder);
+    // The 0 and 1 represent the '.' and '..', so we skip them.
+    unset($scandir_list[0], $scandir_list[1]);
+    foreach ($scandir_list as $item_name) {
+      if (is_dir($current_folder . '/' . $item_name)) {
+        $folders_to_check[] = $current_folder . '/' . $item_name;
+      }
+    }
+    // Remove the first folder from the queue, it was processed.
+    array_shift($folders_to_check);
+  }
+
+  // If we did not find the file, then we show an error and do not save the
+  // flipping book.
+  if (!$index_html_found) {
+    drupal_set_message(t('The index.html file could not be found in the archive for your Flipping Book.'), 'error');
+    return;
   }
 
   $record = array(
