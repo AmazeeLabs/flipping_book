@@ -280,7 +280,6 @@ function flipping_book_reference_field_formatter_prepare_view($entity_type, $ent
 function flipping_book_reference_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $settings = $display['settings'];
   $result = array();
-
   switch ($display['type']) {
     case 'flipping_book_reference_default':
     case 'flipping_book_reference_plain':
@@ -294,6 +293,7 @@ function flipping_book_reference_field_formatter_view($entity_type, $entity, $fi
             '#options' => array(
               'attributes' => array(
                 'target' => $settings['target'],
+                'class' => array('call-to-action'),
               ),
             ),
           );
