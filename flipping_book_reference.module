@@ -288,7 +288,7 @@ function flipping_book_reference_field_formatter_view($entity_type, $entity, $fi
         if ($display['type'] == 'flipping_book_reference_default') {
           $result[$delta] = array(
             '#type' => 'link',
-            '#title' => $flipping_book->title,
+            '#title' => t('Read !flipping_book_title', array('!flipping_book_title' => $flipping_book->title)),
             '#href' => $flipping_book->url,
             '#options' => array(
               'attributes' => array(
