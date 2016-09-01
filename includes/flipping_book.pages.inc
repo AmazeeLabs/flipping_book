@@ -152,23 +152,19 @@ function flipping_book_management_form_submit($form, &$form_state) {
   }
 
   // FIX KEN-621 - Rename Flipping books with backslashes in filename to correct forward-slash based folder directory
-  try {
-    $fileDirectory = file_stream_wrapper_get_instance_by_uri($destination)->realpath();
-    $fileIterator = new FilesystemIterator($fileDirectory);
-    foreach ($fileIterator as $fileInfo) {
-      $origFilename = $fileInfo->getFilename();
-      // Contains backslash in filename
-      if (strpos($origFilename, '\\') !== FALSE && substr($origFilename, -1) !== '\\') {
-        $fileName = file_destination($fileDirectory . '/' . str_replace('\\', '/', $origFilename), FILE_EXISTS_REPLACE);
-        $filePath = dirname($fileName);
-        $dirWriteable = file_prepare_directory($filePath, FILE_CREATE_DIRECTORY || FILE_MODIFY_PERMISSIONS);
-        if ($dirWriteable) {
-          file_unmanaged_move($fileDirectory . '/' . $origFilename, $fileName);
-        }
+  $fileDirectory = file_stream_wrapper_get_instance_by_uri($destination)->realpath();
+  $fileIterator = new FilesystemIterator($fileDirectory);
+  foreach ($fileIterator as $fileInfo) {
+    $origFilename = $fileInfo->getFilename();
+    // Contains backslash in filename
+    if (strpos($origFilename, '\\') !== FALSE && substr($origFilename, -1) !== '\\') {
+      $fileName = file_destination($fileDirectory . '/' . str_replace('\\', '/', $origFilename), FILE_EXISTS_REPLACE);
+      $filePath = dirname($fileName);
+      $dirWriteable = file_prepare_directory($filePath, FILE_CREATE_DIRECTORY || FILE_MODIFY_PERMISSIONS);
+      if ($dirWriteable) {
+        file_unmanaged_move($fileDirectory . '/' . $origFilename, $fileName);
       }
     }
-  } catch (Exception $e) {
-    // ignore error
   }
 
   $record = array(
