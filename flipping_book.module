@@ -193,9 +193,8 @@ function flipping_book_file_download($uri) {
   if (arg(2) != 'flipping_book') {
     return NULL;
   }
-  
   $file_path = drupal_realpath($uri);
-  $denied = (arg(2) != 'flipping_book') || !file_exists($file_path) || !is_file($file_path) || !user_access('access private flipping_books');
+  $denied = !file_exists($file_path) || !is_file($file_path) || !user_access('access private flipping_books');
 
   // Access specifically denied.
   if ($denied) {
