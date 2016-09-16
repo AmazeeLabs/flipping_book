@@ -202,7 +202,8 @@ function flipping_book_file_download($uri) {
   }
 
   $file = new stdClass();
-  $file->filename = end(explode('/', $uri));
+  $uri_chunks = explode('/', $uri);
+  $file->filename = end($uri_chunks);
   $file->filemime = file_get_mimetype($uri);
   $file->filesize = filesize($file_path);
 
