@@ -100,6 +100,9 @@ function flipping_book_management_form_submit($form, &$form_state) {
   file_prepare_directory($fdir, FILE_CREATE_DIRECTORY);
   $destination = file_destination($fdir . '/' . $dir, FILE_EXISTS_RENAME);
 
+  //Create the directory in order to ensure upload works with busy-bee
+  mkdir($destination);
+
   //$zip = new ZipArchive();
   //$res = $zip->open($filepath);
   $old_locale = setlocale(LC_CTYPE, '0');
